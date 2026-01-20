@@ -96,7 +96,26 @@ def login_page(request):
     return render(request, 'core/login.html')
 
 def appointments_page(request):
-    return render(request, 'core/appointments.html')
+    user = request.user
+
+    if user.is_staff:
+        total_appointments = Appointment.objects.count()
+        pending_appointments = Appointment.objects.filter(status='PENDING').count()
+        completed_appointments = Appointment.objects.filter(status='COMPLETED').count()
+        cancelled_appointments = Appointment.objects.filter(status='REJECTED').count()
+    else:
+        total_appointments = Appointment.objects.filter(user=user).count()
+        pending_appointments = Appointment.objects.filter(user=user, status='PENDING').count()
+        completed_appointments = Appointment.objects.filter(user=user, status='COMPLETED').count()
+        cancelled_appointments = Appointment.objects.filter(user=user, status='REJECTED').count()
+    
+    context = {
+        'total_appointments': total_appointments,
+        'pending_appointments': pending_appointments,
+        'completed_appointments': completed_appointments,
+        'cancelled_appointments': cancelled_appointments,
+    }
+    return render(request, 'core/appointments.html', context)
 
 def admin_dashboard_page(request):
     return render(request, 'core/admin_dashboard.html')
