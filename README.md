@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🗓️ Online Appointment & Service Management System
 
 ## 📌 Project Overview
@@ -36,7 +35,13 @@ This system provides a **digital solution** for booking, approving, and managing
 ---
 
 ## 🧱 System Architecture
+The system follows a standard **frontend-backend architecture**:
 
+- **Frontend**: HTML, CSS, JavaScript (AJAX for dynamic interactions)
+- **Backend**: Django (Python) serving REST-like JSON APIs
+- **Database**: SQLite for storing users and appointments
+
+Users interact via the web interface, which communicates with Django views that perform CRUD operations on the database.
 
 ---
 
@@ -58,8 +63,8 @@ This system provides a **digital solution** for booking, approving, and managing
 - Uses Django’s built-in `User` model for secure authentication.
 
 ### Appointments
-- Linked to users
-- Includes service type, date, time, status, and admin notes
+- Linked to users via ForeignKey
+- Fields: `service_type`, `appointment_date`, `appointment_time`, `status`, `notes`
 - Status lifecycle: `PENDING → APPROVED / REJECTED → COMPLETED`
 
 ---
@@ -78,6 +83,3 @@ This system provides a **digital solution** for booking, approving, and managing
 ```bash
 git clone <repository-url>
 cd appointment_system
-=======
-# EMT_Appointment_Booking
->>>>>>> aa6baefb8b2700456ac89968ba078c77bc1ee23d
