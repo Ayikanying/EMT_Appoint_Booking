@@ -128,21 +128,25 @@
             </div>
         </div>
 
-        <!-- Appointment Booking Form -->
         <!-- Appointment Booking Form (GLOBAL & REUSABLE) -->
-        <div class="appointment-form" id="appointmentForm" style="display:none; border:1px solid #ccc; padding:1rem; margin-top:1rem;">
+        <form class="appointment-form"
+            id="appointmentForm"
+            style="display:none; border:1px solid #ccc; padding:1rem; margin-top:1rem;">
+
             <h3>Book Appointment</h3>
 
-            <input type="text" id="serviceType" readonly placeholder="Service Type">
-            <input type="date" id="appointmentDate" required>
-            <input type="time" id="appointmentTime" required>
+            <input type="text" id="service_type" readonly placeholder="Service Type">
+
+            <input type="date" id="appointment_date" required>
+            <input type="time" id="appointment_time" required>
+
             <textarea id="notes" placeholder="Notes (optional)"></textarea>
 
             <div style="display:flex; gap:0.5rem;">
-                <button type="button" id="submitBooking">Submit</button>
+                <button type="submit">Submit</button>
                 <button type="button" id="cancelBooking">Cancel</button>
             </div>
-        </div>
+        </form>
 
 
         <!-- Appointments Table -->
