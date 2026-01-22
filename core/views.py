@@ -15,6 +15,7 @@ from . models import Profile
 from datetime import datetime
 # Create your views here.
 
+# Creating a user and also updating the user profile with available information
 @csrf_exempt
 @require_POST
 def register_user(request):
