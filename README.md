@@ -81,5 +81,5 @@ Users interact via the web interface, which communicates with Django views that 
 
 ### 1️⃣ Clone or Download the Project
 ```bash
-git clone <repository-url>
+git clone <https://github.com/Ayikanying/EMT_Appoint_Booking>
 cd appointment_system
