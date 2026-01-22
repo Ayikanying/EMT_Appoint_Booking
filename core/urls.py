@@ -7,13 +7,16 @@ urlpatterns = [
     path('login/', views.login_user, name='login'),
     path('logout/', views.logout_user, name='logout'),
 
-    path('register-page/', views.register_page, name='register_page'),
-    path('login-page/', views.login_page, name='login_page'),
-    path('appointments-page/', views.appointments_page, name='appointments_page'),
-    path('admin-dashboard-page/', views.admin_dashboard_page, name='admin_dashboard_page'),
+    # Appointments pages & APIs
+    path('appointments-page/', views.appointments_page, name='appointments_page'),  # HTML page
+    path('appointments/', views.list_appointments, name='list_appointments'),       # API: list appointments
+    path('create-appointment/', views.create_appointment, name='create_appointment'),  # API: create
+    path('delete-appointment/<int:appointment_id>/', views.delete_appointment, name='delete_appointment'),  # API: delete
+    path('pay/<int:appointment_id>/', views.pay_for_appointment, name='pay_for_appointment'),               # API: pay
 
-    # Appointments
-    path('appointments/', views.list_appointments, name='list_appointments'), # Admin: all appointments, User: own
-    path('create-appointment/', views.create_appointment, name='create_appointment'), # User creates
-    path('appointments/<int:appointment_id>/update/', views.update_appointment, name='update_appointment'), # Admin updates
+    # Admin updates appointment status
+    path('appointments/<int:appointment_id>/update/', views.update_appointment, name='update_appointment'),
+
+    # Optional: admin dashboard page
+    # path('admin-dashboard-page/', views.admin_dashboard_page, name='admin_dashboard_page'),
 ]
