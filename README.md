@@ -5,7 +5,7 @@ This project is a **full-stack web application** developed as part of a **Busine
 
 The system solves the problem of **manual appointment booking and long service queues** by allowing users to book appointments online and enabling administrators to manage and track service delivery efficiently.
 
----
+
 
 ## Problem Statement
 Many organizations such as clinics, banks, and service centers rely on manual appointment processes, which lead to:
