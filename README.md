@@ -81,5 +81,13 @@ Users interact via the web interface, which communicates with Django views that 
 
 ### Clone or Download the Project
 ```bash
-git clone <https://github.com/Ayikanying/EMT_Appoint_Booking>
+
+mkdir appointment_system
 cd appointment_system
+git clone <https://secrete_token@github.com/Ayikanying/EMT_Appoint_Booking>
+Create virutalenv & activate it
+RUN pip install -r requirements.txt
+run python manage.py runserver
+
+localhost/api/register-page/
+localhost/api/login-page
