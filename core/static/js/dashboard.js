@@ -1,3 +1,88 @@
+
+// create appointments
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("appointmentForm");
+    if (!form) return;
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const payload = {
+            service_type: document.getElementById("service_type").value,
+            appointment_date: document.getElementById("appointment_date").value,
+            appointment_time: document.getElementById("appointment_time").value,
+            notes: document.getElementById("notes").value
+        };
+
+        const response = await fetch("/api/create-appointment/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            document.getElementById("apptMessage").textContent = data.message;
+        } else {
+            document.getElementById("apptMessage").textContent = data.error;
+        }
+    });
+});
+
+// display form when "Book Appointment" clicked
+document.addEventListener('DOMContentLoaded', () => {
+    const bookButtons = document.querySelectorAll('.book-btn');
+    const appointmentForm = document.getElementById('appointmentForm');
+    const serviceTypeInput = document.getElementById('serviceType');
+    const cancelBookingBtn = document.getElementById('cancelBooking');
+
+    let currentServiceCard = null;
+
+    bookButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const serviceCard = button.closest('.service-card');
+            const serviceName = serviceCard.dataset.service;
+
+            // Move form under this service card
+            serviceCard.insertAdjacentElement('afterend', appointmentForm);
+            serviceTypeInput.value = serviceName;
+
+            // Show form
+            appointmentForm.style.display = 'block';
+
+            currentServiceCard = serviceCard;
+        });
+    });
+
+    cancelBookingBtn.addEventListener('click', () => {
+        // Hide the form
+        appointmentForm.style.display = 'none';
+        serviceTypeInput.value = '';
+        currentServiceCard = null;
+    });
+
+    // Optional: handle submission
+    document.getElementById('submitBooking').addEventListener('click', () => {
+        const date = document.getElementById('appointmentDate').value;
+        const time = document.getElementById('appointmentTime').value;
+        const notes = document.getElementById('notes').value;
+        const service = serviceTypeInput.value;
+
+        if (!date || !time) {
+            alert('Please select date and time');
+            return;
+        }
+
+        // Here you can send an AJAX request to Django to save the appointment
+        console.log(`Booking ${service} on ${date} at ${time}. Notes: ${notes}`);
+
+        // Hide form after booking
+        appointmentForm.style.display = 'none';
+        serviceTypeInput.value = '';
+    });
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
     const tableBody = document.querySelector(".apppointments tbody");
     if (!tableBody) return;

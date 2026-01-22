@@ -13,6 +13,10 @@ from django.utils.decorators import method_decorator
 from . models import Appointment
 from . models import Profile
 from datetime import datetime
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import Appointment
 # Create your views here.
 
 # Creating a user and also updating the user profile with available information
@@ -206,10 +210,6 @@ def create_appointment(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
-
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Appointment
 
 @login_required
 def list_appointments(request):

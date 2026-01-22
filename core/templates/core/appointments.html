@@ -97,59 +97,40 @@
 
         <!-- Services -->
         <div class="services">
-            <div class="mb">
-                <h3>Available Services</h3>
-                {% if request.user.is_staff %}
-                    <a href="" class="btn">➕ Add Service</a>
-                {% endif %}
-            </div>
+            <h3>Available Services</h3>
+
             <div class="service-grid">
 
                 <div class="service-card" data-service="Medical Consultation">
                     <h4>Medical Consultation</h4>
                     <p>General medical checkups and consultations.</p>
-                    {% if request.user.is_staff %}
-                        <a href="" class="btn">Edit Service</a>
-                    {% else %}
-                        <button class="book-btn">Book</button>
-                    {% endif %}
+                    <button class="book-btn">Book</button>
                 </div>
 
                 <div class="service-card" data-service="Emergency Response">
                     <h4>Emergency Response</h4>
                     <p>Immediate emergency medical assistance.</p>
-                    {% if request.user.is_staff %}
-                        <a href="" class="btn">Edit Service</a>
-                    {% else %}
-                        <button class="book-btn">Book</button>
-                    {% endif %}
+                    <button class="book-btn">Book</button>
                 </div>
 
                 <div class="service-card" data-service="Home Care">
                     <h4>Home Care</h4>
                     <p>Medical care provided at home.</p>
-                    {% if request.user.is_staff %}
-                        <a href="" class="btn">Edit Service</a>
-                    {% else %}
-                        <button class="book-btn">Book</button>
-                    {% endif %}
+                    <button class="book-btn">Book</button>
                 </div>
 
                 <div class="service-card" data-service="Mental Health Session">
                     <h4>Mental Health Session</h4>
                     <p>Professional counseling and therapy.</p>
-                    {% if request.user.is_staff %}
-                        <a href="" class="btn">Edit Service</a>
-                    {% else %}
-                        <button class="book-btn">Book</button>
-                    {% endif %}
+                    <button class="book-btn">Book</button>
                 </div>
 
             </div>
         </div>
 
         <!-- Appointment Booking Form -->
-        <div class="appointment-form" id="appointmentForm" style="display:none;">
+        <!-- Appointment Booking Form (GLOBAL & REUSABLE) -->
+        <div class="appointment-form" id="appointmentForm" style="display:none; border:1px solid #ccc; padding:1rem; margin-top:1rem;">
             <h3>Book Appointment</h3>
 
             <input type="text" id="serviceType" readonly placeholder="Service Type">
@@ -157,11 +138,12 @@
             <input type="time" id="appointmentTime" required>
             <textarea id="notes" placeholder="Notes (optional)"></textarea>
 
-            <div style="display:flex; gap: 0.5rem;">
-                <button id="submitBooking">Submit</button>
-                <button id="cancelBooking" type="button">Cancel</button>
+            <div style="display:flex; gap:0.5rem;">
+                <button type="button" id="submitBooking">Submit</button>
+                <button type="button" id="cancelBooking">Cancel</button>
             </div>
         </div>
+
 
         <!-- Appointments Table -->
         <div class="apppointments">
@@ -174,8 +156,6 @@
                         <th>Time</th>
                         <th>Status</th>
                         <th>Notes</th>
-                        <th>Manage Appointments</th>
-                        <th>Complet Appointments</th>
                     </tr>
                 </thead>
                 <tbody>
