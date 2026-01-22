@@ -1,4 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+    initBookingForm();
+    loadAppointments();
+});
+
+/* ===============================
+   BOOKING FORM LOGIC
+=============================== */
+function initBookingForm() {
 
     const form = document.getElementById("appointmentForm");
     if (!form) return;
@@ -9,32 +17,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const notesInput = document.getElementById("notes");
     const cancelBtn = document.getElementById("cancelBooking");
 
-    /* ===============================
-       SHOW FORM WHEN BOOK CLICKED
-    =============================== */
+    // Show form
     document.querySelectorAll(".book-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const card = btn.closest(".service-card");
-            serviceInput.value = card.dataset.service;
 
-            card.insertAdjacentElement("afterend", form);
+            serviceInput.value = card.dataset.service;
             form.style.display = "block";
+            card.insertAdjacentElement("afterend", form);
         });
     });
 
-    /* ===============================
-       CANCEL BOOKING
-    =============================== */
+    // Cancel
     cancelBtn.addEventListener("click", () => {
         form.reset();
         form.style.display = "none";
     });
 
-    /* ===============================
-       SUBMIT APPOINTMENT
-    =============================== */
+    // Submit
     form.addEventListener("submit", async e => {
         e.preventDefault();
+
+        if (!serviceInput.value) {
+            alert("Please select a service");
+            return;
+        }
 
         if (!dateInput.value || !timeInput.value) {
             alert("Please select date and time");
@@ -48,41 +55,59 @@ document.addEventListener("DOMContentLoaded", () => {
             notes: notesInput.value
         };
 
-        const response = await fetch("/api/create-appointment/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken")
-            },
-            body: JSON.stringify(payload)
-        });
+        try {
+            const response = await fetch("/api/create-appointment/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify(payload)
+            });
 
-        const data = await response.json();
-        alert(data.message || data.error);
+            const data = await response.json();
+            alert(data.message || data.error);
 
-        if (response.ok) {
-            form.reset();
-            form.style.display = "none";
-            location.reload();
+            if (response.ok) {
+                form.reset();
+                form.style.display = "none";
+                loadAppointments();
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to create appointment");
         }
     });
-});
-
+}
 
 /* ===============================
-   LOAD APPOINTMENTS TABLE
+   LOAD APPOINTMENTS
 =============================== */
-document.addEventListener("DOMContentLoaded", async () => {
+async function loadAppointments() {
+
     const tableBody = document.querySelector(".apppointments tbody");
     if (!tableBody) return;
+
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="7" style="text-align:center;">
+                Loading...
+            </td>
+        </tr>
+    `;
 
     try {
         const response = await fetch("/api/appointments/");
         const data = await response.json();
 
-        if (!response.ok || !data.appointments.length) {
+        if (!response.ok || !data.appointments?.length) {
             tableBody.innerHTML = `
-                <tr><td colspan="7" style="text-align:center;">No appointments found</td></tr>
+                <tr>
+                    <td colspan="7" style="text-align:center;">
+                        No appointments found
+                    </td>
+                </tr>
             `;
             return;
         }
@@ -90,57 +115,75 @@ document.addEventListener("DOMContentLoaded", async () => {
         tableBody.innerHTML = "";
 
         data.appointments.forEach(appt => {
-
-            const manageButtons = `
-                <button onclick="editAppointment(${appt.id})">Update</button>
-                <button onclick="deleteAppointment(${appt.id})">Delete</button>
-            `;
-
-            const paymentButton =
-                appt.status === "PENDING"
-                    ? `<button onclick="makePayment(${appt.id})">Pay (MTN / Airtel)</button>`
-                    : "";
-
             const row = document.createElement("tr");
+
+            const paymentBtn =
+                appt.status === "PENDING"
+                    ? `<button onclick="makePayment(${appt.id})">Pay</button>`
+                    : "-";
+
             row.innerHTML = `
                 <td>${appt.service_type}</td>
                 <td>${appt.appointment_date}</td>
                 <td>${appt.appointment_time}</td>
                 <td>${appt.status}</td>
-                <td>${appt.notes}</td>
-                <td>${manageButtons}</td>
-                <td>${paymentButton}</td>
+                <td>${appt.notes || "-"}</td>
+                <td>
+                    <button onclick="editAppointment(${appt.id})">Edit</button>
+                    <button onclick="deleteAppointment(${appt.id})">Delete</button>
+                </td>
+                <td>${paymentBtn}</td>
             `;
+
             tableBody.appendChild(row);
         });
 
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+        console.error(error);
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center; color:red;">
+                    Failed to load appointments
+                </td>
+            </tr>
+        `;
     }
-});
-
+}
 
 /* ===============================
    PAYMENT
-=============================== */
+========================A======= */
 async function makePayment(appointmentId) {
-    const method = prompt("Enter payment method: MTN or AIRTEL");
+
+    const method = prompt("Choose payment method: MTN or AIRTEL");
     if (!method) return;
 
-    const response = await fetch(`/api/pay/${appointmentId}/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCookie("csrftoken")
-        },
-        body: JSON.stringify({ payment_method: method })
-    });
+    const paymentMethod = method.trim().toUpperCase();
+    if (!["MTN", "AIRTEL"].includes(paymentMethod)) {
+        alert("Invalid payment method");
+        return;
+    }
 
-    const data = await response.json();
-    alert(data.message || data.error);
-    location.reload();
+    try {
+        const response = await fetch(`/api/pay/${appointmentId}/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify({ payment_method: paymentMethod })
+        });
+
+        const data = await response.json();
+        alert(data.message || data.error);
+
+        if (response.ok) loadAppointments();
+
+    } catch (err) {
+        console.error(err);
+        alert("Payment failed");
+    }
 }
-
 
 /* ===============================
    HELPERS
@@ -152,14 +195,20 @@ function editAppointment(id) {
 async function deleteAppointment(id) {
     if (!confirm("Delete appointment?")) return;
 
-    const res = await fetch(`/api/delete-appointment/${id}/`, {
-        method: "POST",
-        headers: { "X-CSRFToken": getCookie("csrftoken") }
-    });
+    try {
+        const res = await fetch(`/api/delete-appointment/${id}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": getCookie("csrftoken") }
+        });
 
-    const data = await res.json();
-    alert(data.message || "Deleted");
-    location.reload();
+        const data = await res.json();
+        alert(data.message || "Deleted");
+        if (res.ok) loadAppointments();
+
+    } catch (err) {
+        console.error(err);
+        alert("Delete failed");
+    }
 }
 
 function getCookie(name) {
