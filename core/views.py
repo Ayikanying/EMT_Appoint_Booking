@@ -95,6 +95,12 @@ def logout_user(request):
     return JsonResponse({'message': 'Logged out successfully'})
 
 
+def login_page(request):
+    return render(request, 'core/login.html')
+
+def register_page(request):
+    return render(request, 'core/register.html')
+
 # -------------------------------
 # Appointments Page
 # -------------------------------
