@@ -1,4 +1,4 @@
-# 🗓️ Online Appointment & Service Management System
+# Online Appointment & Service Management System
 
 ## Project Overview
 This project is a **full-stack web application** developed as part of a **Business Technology Apprenticeship** at **E&M Technology House**.
