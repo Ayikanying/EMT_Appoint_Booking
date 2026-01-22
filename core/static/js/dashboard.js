@@ -28,22 +28,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        // 🔽 CHANGED: clear table & add extra columns (Manage + Payment)
+        // clear table & add extra columns (Manage + Payment)
         tableBody.innerHTML = "";
 
         data.appointments.forEach(appt => {
-
-            /* ============================
-               NEW: Manage buttons logic
-            ============================ */
+       
             let manageButtons = `
                 <button onclick="editAppointment(${appt.id})">Update</button>
                 <button onclick="deleteAppointment(${appt.id})">Delete</button>
             `;
 
-            /* ============================
-               NEW: Payment button logic
-            ============================ */
+            
             let paymentButton = "";
 
             if (appt.status === "PENDING") {
@@ -55,7 +50,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 `;
             }
 
-            // 🔽 CHANGED: row now has 7 columns
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${appt.service_type}</td>
@@ -81,9 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-/* ============================
-   NEW: Manage functions
-============================ */
+
 function editAppointment(id) {
     alert("Edit appointment " + id);
     // Later: open modal or form
@@ -102,9 +94,6 @@ async function deleteAppointment(id) {
     location.reload();
 }
 
-/* ============================
-   NEW: Payment simulation
-============================ */
 async function makePayment(appointmentId) {
     const method = prompt("Enter payment method: MTN or AIRTEL");
 
@@ -124,9 +113,7 @@ async function makePayment(appointmentId) {
     location.reload();
 }
 
-/* ============================
-   EXISTING: CSRF helper
-============================ */
+
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
