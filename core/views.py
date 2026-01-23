@@ -11,17 +11,12 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .models import Appointment, Profile
 
-
-# -------------------------------
 # Helpers
-# -------------------------------
 def is_admin(user):
     return user.is_staff
 
 
-# -------------------------------
 # User Registration / Login / Logout
-# -------------------------------
 @csrf_exempt
 @require_POST
 def register_user(request):
@@ -105,9 +100,7 @@ def profile_page(request):
     profile = request.user.profile
     return render(request, 'core/profile.html', {'profile': profile})
 
-# -------------------------------
 # Appointments Page
-# -------------------------------
 @login_required
 def appointments_page(request):
     user = request.user
@@ -131,9 +124,7 @@ def appointments_page(request):
     return render(request, 'core/appointments.html', context)
 
 
-# -------------------------------
 # Appointment APIs
-# -------------------------------
 @login_required
 @require_POST
 def create_appointment(request):
@@ -228,9 +219,7 @@ def pay_for_appointment(request, appointment_id):
         return JsonResponse({'error': str(e)}, status=500)
 
 
-# -------------------------------
 # Admin Only: Update Appointment
-# -------------------------------
 @csrf_exempt
 @login_required
 @user_passes_test(is_admin)

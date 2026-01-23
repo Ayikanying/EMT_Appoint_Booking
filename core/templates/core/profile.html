@@ -8,18 +8,15 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h3>Hospital Dashboard</h3>
+            <h3>SHospital</h3>
         </div>
 
         <!-- Appointments Section -->
         <div class="sidebar-section">
-            <h4>Appointments</h4>
+            <h4>Dashboard</h4>
             <ul>
-                <li><a href="#">Overview</a></li>
-                <li><a href="#">Book Appointment</a></li>
-                <li><a href="#">My Appointments</a></li>
+                <li><a href="{% url 'appointments_page' %}">Overview</a></li>
                 {% if request.user.is_staff %}
-                <li><a href="#">All Appointments</a></li>
                 <li><a href="#">Appointment Calendar</a></li>
                 {% endif %}
             </ul>
