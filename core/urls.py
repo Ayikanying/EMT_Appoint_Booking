@@ -11,6 +11,7 @@ urlpatterns = [
     # Web pages
     path('login-page/', views.login_page, name='login_page'),
     path('register-page/', views.register_page, name='register_page'),
+    path('profile-page/', views.profile_page, name='profile_page'),
     path('appointments-page/', views.appointments_page, name='appointments_page'),  # HTML page
     path('appointments/', views.list_appointments, name='list_appointments'),       # API: list appointments
     path('create-appointment/', views.create_appointment, name='create_appointment'),  # API: create

@@ -1,0 +1,262 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3>Hospital Dashboard</h3>
+        </div>
+
+        <!-- Appointments Section -->
+        <div class="sidebar-section">
+            <h4>Appointments</h4>
+            <ul>
+                <li><a href="#">Overview</a></li>
+                <li><a href="#">Book Appointment</a></li>
+                <li><a href="#">My Appointments</a></li>
+                {% if request.user.is_staff %}
+                <li><a href="#">All Appointments</a></li>
+                <li><a href="#">Appointment Calendar</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Services Section -->
+        <div class="sidebar-section">
+            <h4>Services</h4>
+            <ul>
+                <li><a href="#">Medical Consultation</a></li>
+                <li><a href="#">Emergency Response</a></li>
+                <li><a href="#">Home Care</a></li>
+                <li><a href="#">Mental Health</a></li>
+            </ul>
+        </div>
+
+        <!-- Patients Section (Admin only) -->
+        {% if request.user.is_staff %}
+        <div class="sidebar-section">
+            <h4>Patients</h4>
+            <ul>
+                <li><a href="#">All Patients</a></li>
+                <li><a href="#">Patient Records</a></li>
+                <li><a href="#">Feedback / Reviews</a></li>
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Reports Section -->
+        <div class="sidebar-section">
+            <h4>Reports</h4>
+            <ul>
+                <li><a href="#">Daily Appointments</a></li>
+                <li><a href="#">Weekly Appointments</a></li>
+                <li><a href="#">Revenue / Billing</a></li>
+            </ul>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="sidebar-section">
+            <h4>Settings</h4>
+            <ul>
+                <li><a href="{% url 'profile_page' %}">Profile</a></li>
+                <li><a href="#">Account Settings</a></li>
+                <li><a href="#">Notifications</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main content: PROFILE INFO -->
+    <section class="main-content">
+
+        <h2>Your Profile</h2>
+
+        <div class="profile-container">
+
+            <!-- Profile Image Card on top -->
+            <div class="profile-image-card">
+                {% if request.user.profile.image %}
+                    <img src="{{ request.user.profile.image.url }}" alt="Profile Image">
+                {% else %}
+                    <img src="{% static 'images/default-profile.png' %}" alt="Default Profile">
+                {% endif %}
+            </div>
+
+            <!-- Profile Details below -->
+            <div class="profile-details" id="profileDetails">
+                <div class="info-row"><span>Full Name:</span> {{ request.user.first_name }} {{ request.user.last_name }}</div>
+                <div class="info-row"><span>Email:</span> {{ request.user.email }}</div>
+                <div class="info-row"><span>Phone Number:</span> {{ request.user.profile.phone_number|default:"-" }}</div>
+                {% if request.user.profile.role == "doctor" %}
+                <div class="info-row"><span>Speciality:</span> {{ request.user.profile.speciality|default:"-" }}</div>
+                <div class="info-row"><span>Hospital ID:</span> {{ request.user.profile.hospital_id|default:"-" }}</div>
+                {% endif %}
+                <button id="editProfileBtn">Edit Profile</button>
+            </div>
+
+            <!-- Edit Profile Form (hidden by default) -->
+             <div class="edit-form-container" style="width: 100%;">
+                <form class="profile-details" id="editProfileForm" style="display: none;" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="info-row">
+                        <span>Full Name:</span>
+                        <input type="text" name="first_name" value="{{ request.user.first_name }}" required>
+                    </div>
+                    <div class="info-row">
+                        <span>Last Name:</span>
+                        <input type="text" name="last_name" value="{{ request.user.last_name }}" required>
+                    </div>
+                    <div class="info-row">
+                        <span>Email:</span>
+                        <input type="email" name="email" value="{{ request.user.email }}" required>
+                    </div>
+                    <div class="info-row">
+                        <span>Phone Number:</span>
+                        <input type="text" name="phone_number" value="{{ request.user.profile.phone_number }}">
+                    </div>
+                    {% if request.user.profile.role == "doctor" %}
+                    <div class="info-row">
+                        <span>Speciality:</span>
+                        <input type="text" name="speciality" value="{{ request.user.profile.speciality }}">
+                    </div>
+                    <div class="info-row">
+                        <span>Hospital ID:</span>
+                        <input type="text" name="hospital_id" value="{{ request.user.profile.hospital_id }}">
+                    </div>
+                    {% endif %}
+                    <div class="info-row">
+                        <span>Profile Image:</span>
+                        <input type="file" name="image">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <button type="submit">Save</button>
+                        <button type="button" id="cancelEditBtn">Cancel</button>
+                    </div>
+                </form>
+             </div>
+        </div>
+
+    </section>
+</div>
+
+<style>
+/* PROFILE CONTAINER FULL WIDTH */
+
+.profile-container {
+    display: flex;
+    flex-direction: column; /* image on top, details below */
+    width: 100%; /* full width of main-content */
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+/* Profile Image Card */
+.profile-image-card {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #1976d2;
+}
+
+.profile-image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Profile Details */
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    background: #f9f9f9;
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.1);
+    width: 100%;
+}
+
+/* Edit Profile Form full main content width */
+#editProfileForm {
+    display: none;
+    flex-direction: column;
+    width: 100%; /* full width of container */
+    max-width: 100%; /* prevent shrinking */
+    padding: 1rem 1.2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.1);
+    gap: 0.8rem;
+}
+
+/* Info rows */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.info-row span {
+    font-weight: 600;
+}
+
+/* Buttons */
+.profile-details button {
+    align-self: flex-start;
+    padding: 0.6rem 1.2rem;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.profile-details button:hover {
+    background-color: #1565c0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-container {
+        width: 100%;
+    }
+
+    .info-row {
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .profile-details button {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const editBtn = document.getElementById("editProfileBtn");
+    const cancelBtn = document.getElementById("cancelEditBtn");
+    const profileDetails = document.getElementById("profileDetails");
+    const editForm = document.getElementById("editProfileForm");
+
+    editBtn.addEventListener("click", () => {
+        profileDetails.style.display = "none";
+        editForm.style.display = "flex";
+    });
+
+    cancelBtn.addEventListener("click", () => {
+        editForm.style.display = "none";
+        profileDetails.style.display = "flex";
+    });
+});
+</script>
+{% endblock %}

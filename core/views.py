@@ -101,6 +101,10 @@ def login_page(request):
 def register_page(request):
     return render(request, 'core/register.html')
 
+def profile_page(request):
+    profile = request.user.profile
+    return render(request, 'core/profile.html', {'profile': profile})
+
 # -------------------------------
 # Appointments Page
 # -------------------------------
