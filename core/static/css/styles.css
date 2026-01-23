@@ -53,7 +53,7 @@ form input {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1rem;
-    outline: none
+    outline: none;
 }
 
 form input:focus, form input:hover {
@@ -292,29 +292,24 @@ p a:hover {
     background-color: #357ab8;
 }
 
-
-/* ---------------- Appointments Form ----------------*/
+/* ---------------- Appointments Form ---------------- */
 .appointment-form {
     background-color: #fff;
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 1px 6px rgba(0,0,0,0.08);
     margin-top: 2rem;
-
-    /* Span full width of main-content */
     width: 100%;
-    max-width: 100%; /* remove any max-width restriction */
-    box-sizing: border-box; /* include padding in width */
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
-/* Heading */
 .appointment-form h3 {
     margin-bottom: 1rem;
     color: #4a90e2;
     font-size: 1.25rem;
 }
 
-/* Inputs and textarea */
 .appointment-form input,
 .appointment-form textarea {
     width: 100%;
@@ -325,15 +320,13 @@ p a:hover {
     font-size: 1rem;
 }
 
-/* Button group wrapper */
 .appointment-form .button-group {
     display: flex;
     gap: 0.5rem;
-    justify-content: flex-start; /* align left */
-    flex-wrap: wrap; /* allow buttons to wrap on smaller screens */
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }
 
-/* Buttons */
 .appointment-form button {
     padding: 0.5rem 1.25rem;
     border: none;
@@ -350,7 +343,6 @@ p a:hover {
     background-color: #357ab8;
 }
 
-/* Cancel button */
 #cancelBooking {
     background-color: #e74c3c;
 }
@@ -393,15 +385,125 @@ p a:hover {
     background-color: #f9f9f9;
 }
 
+/* ---------------- Payment Modal ---------------- */
+.modal {
+    
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 2rem;
+    width: 350px;
+    max-width: 90%;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+/* ---------------- Styled Dropdown Options ---------------- */
+#providerSelect option {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #fff;
+    color: #333;
+}
+
+#providerSelect option:hover {
+    background-color: #4a90e2;
+    color: white;
+}
+
+
+
+.close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+}
+
+.payment-options {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.payment-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.payment-btn:hover {
+    transform: scale(1.1);
+}
+
+#paymentForm {
+   
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    text-align: left;
+}
+
+#paymentForm input {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#paymentForm input:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+#paymentForm button {
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#paymentForm button:hover {
+    background-color: #357ab8;
+}
+
+#popupMessage {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #555;
+    text-align: center;
+}
+
 /* ---------------- Mobile responsiveness ---------------- */
 @media (max-width: 992px) {
 
-    /* Dashboard layout */
     .dashboard {
         flex-direction: column;
     }
 
-    /* Sidebar becomes top menu */
     .sidebar {
         width: 100%;
         height: auto;
@@ -437,7 +539,6 @@ p a:hover {
         white-space: nowrap;
     }
 
-    /* Main content */
     .main-content {
         padding: 1rem;
         grid-template-columns: 1fr;
@@ -449,5 +550,19 @@ p a:hover {
 
     .service-grid {
         grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    .payment-options {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    #paymentForm {
+        gap: 0.5rem;
     }
 }

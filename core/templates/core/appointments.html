@@ -171,6 +171,34 @@
             </table>
         </div>
         
+        <!-- Payment Modal -->
+        <div id="paymentModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Choose Payment Provider</h3>
+
+                <!-- Dropdown for selecting provider -->
+                <div class="payment-options">
+                    <label>
+                        <input type="radio" name="provider" value="Airtel">
+                        <img src="{% static 'images/airtel-logo.png' %}" alt="Airtel" class="provider-logo">
+                    </label>
+                    <label>
+                        <input type="radio" name="provider" value="MTN">
+                        <img src="{% static 'images/mtn-logo.png' %}" alt="MTN" class="provider-logo">
+                    </label>
+                </div>
+
+                <!-- Payment form that appears after selection -->
+                <form id="paymentForm">
+                    <input type="text" placeholder="Phone Number" required>
+                    <input type="number" placeholder="Amount" required>
+                    <button type="submit">Pay</button>
+                </form>
+
+                <p id="popupMessage">Select your preferred payment provider.</p>
+            </div>
+        </div>
 
     </section>
 </div>
