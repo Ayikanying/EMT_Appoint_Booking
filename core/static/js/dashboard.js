@@ -6,9 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initPaymentModal();
 });
 
-/* ===============================
-   BOOKING FORM LOGIC
-=============================== */
+/* BOOKING FORM LOGIC */
 function initBookingForm() {
 
     const form = document.getElementById("appointmentForm");
@@ -75,9 +73,7 @@ function initBookingForm() {
     });
 }
 
-/* ===============================
-   LOAD APPOINTMENTS
-=============================== */
+/* LOAD APPOINTMENTS */
 async function loadAppointments() {
 
     const tableBody = document.querySelector(".apppointments tbody");
@@ -140,9 +136,7 @@ async function loadAppointments() {
     }
 }
 
-/* ===============================
-   PAYMENT MODAL LOGIC
-=============================== */
+/* PAYMENT MODAL LOGIC */
 function makePayment(appointmentId) {
     selectedAppointmentId = appointmentId;
     document.getElementById("paymentModal").style.display = "block";
@@ -209,9 +203,7 @@ function initPaymentModal() {
     });
 }
 
-/* ===============================
-   HELPERS
-=============================== */
+/* HELPERS */
 function editAppointment(id) {
     alert("Edit appointment " + id);
 }
