@@ -1,6 +1,9 @@
+let selectedAppointmentId = null;
+
 document.addEventListener("DOMContentLoaded", () => {
     initBookingForm();
     loadAppointments();
+    initPaymentModal();
 });
 
 /* ===============================
@@ -17,34 +20,25 @@ function initBookingForm() {
     const notesInput = document.getElementById("notes");
     const cancelBtn = document.getElementById("cancelBooking");
 
-    // Show form
     document.querySelectorAll(".book-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const card = btn.closest(".service-card");
-
             serviceInput.value = card.dataset.service;
             form.style.display = "block";
             card.insertAdjacentElement("afterend", form);
         });
     });
 
-    // Cancel
     cancelBtn.addEventListener("click", () => {
         form.reset();
         form.style.display = "none";
     });
 
-    // Submit
     form.addEventListener("submit", async e => {
         e.preventDefault();
 
-        if (!serviceInput.value) {
-            alert("Please select a service");
-            return;
-        }
-
-        if (!dateInput.value || !timeInput.value) {
-            alert("Please select date and time");
+        if (!serviceInput.value || !dateInput.value || !timeInput.value) {
+            alert("Please complete all required fields");
             return;
         }
 
@@ -91,9 +85,7 @@ async function loadAppointments() {
 
     tableBody.innerHTML = `
         <tr>
-            <td colspan="7" style="text-align:center;">
-                Loading...
-            </td>
+            <td colspan="7" style="text-align:center;">Loading...</td>
         </tr>
     `;
 
@@ -104,9 +96,7 @@ async function loadAppointments() {
         if (!response.ok || !data.appointments?.length) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="7" style="text-align:center;">
-                        No appointments found
-                    </td>
+                    <td colspan="7" style="text-align:center;">No appointments found</td>
                 </tr>
             `;
             return;
@@ -151,38 +141,72 @@ async function loadAppointments() {
 }
 
 /* ===============================
-   PAYMENT
-========================A======= */
-async function makePayment(appointmentId) {
+   PAYMENT MODAL LOGIC
+=============================== */
+function makePayment(appointmentId) {
+    selectedAppointmentId = appointmentId;
+    document.getElementById("paymentModal").style.display = "block";
+}
 
-    const method = prompt("Choose payment method: MTN or AIRTEL");
-    if (!method) return;
+function initPaymentModal() {
 
-    const paymentMethod = method.trim().toUpperCase();
-    if (!["MTN", "AIRTEL"].includes(paymentMethod)) {
-        alert("Invalid payment method");
-        return;
-    }
+    const modal = document.getElementById("paymentModal");
+    const closeBtn = modal.querySelector(".close");
+    const paymentForm = document.getElementById("paymentForm");
+    const providerSelect = document.getElementById("providerSelect");
 
-    try {
-        const response = await fetch(`/api/pay/${appointmentId}/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken")
-            },
-            body: JSON.stringify({ payment_method: paymentMethod })
-        });
+    closeBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+        paymentForm.reset();
+    });
 
-        const data = await response.json();
-        alert(data.message || data.error);
+    window.addEventListener("click", e => {
+        if (e.target === modal) {
+            modal.style.display = "none";
+            paymentForm.reset();
+        }
+    });
 
-        if (response.ok) loadAppointments();
+    paymentForm.addEventListener("submit", async e => {
+        e.preventDefault();
 
-    } catch (err) {
-        console.error(err);
-        alert("Payment failed");
-    }
+        const phone = paymentForm.querySelector("input[type='text']").value;
+        const amount = paymentForm.querySelector("input[type='number']").value;
+        const provider = providerSelect.value;
+
+        if (!provider) {
+            alert("Please select a payment provider");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/pay/${selectedAppointmentId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({
+                    payment_method: provider,
+                    phone_number: phone,
+                    amount: amount
+                })
+            });
+
+            const data = await response.json();
+            alert(data.message || data.error);
+
+            if (response.ok) {
+                modal.style.display = "none";
+                paymentForm.reset();
+                loadAppointments();
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("Payment failed");
+        }
+    });
 }
 
 /* ===============================
