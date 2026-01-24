@@ -22,17 +22,6 @@
             </ul>
         </div>
 
-        <!-- Services Section -->
-        <div class="sidebar-section">
-            <h4>Services</h4>
-            <ul>
-                <li><a href="#">Medical Consultation</a></li>
-                <li><a href="#">Emergency Response</a></li>
-                <li><a href="#">Home Care</a></li>
-                <li><a href="#">Mental Health</a></li>
-            </ul>
-        </div>
-
         <!-- Patients Section (Admin only) -->
         {% if request.user.is_staff %}
         <div class="sidebar-section">
@@ -60,8 +49,6 @@
             <h4>Settings</h4>
             <ul>
                 <li><a href="{% url 'profile_page' %}">Profile</a></li>
-                <li><a href="#">Account Settings</a></li>
-                <li><a href="#">Notifications</a></li>
                 <li><a href="{% url 'logout' %}">Logout</a></li>
             </ul>
         </div>
