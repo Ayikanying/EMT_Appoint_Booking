@@ -6,49 +6,54 @@ document.addEventListener("DOMContentLoaded", () => {
     initPaymentModal();
 });
 
-/* BOOKING FORM LOGIC */
+// ── Booking Form ────────────────────────────────────────────────
 function initBookingForm() {
-
     const form = document.getElementById("appointmentForm");
     if (!form) return;
 
     const serviceInput = document.getElementById("service_type");
-    const dateInput = document.getElementById("appointment_date");
-    const timeInput = document.getElementById("appointment_time");
-    const notesInput = document.getElementById("notes");
-    const cancelBtn = document.getElementById("cancelBooking");
+    const dateInput   = document.getElementById("appointment_date");
+    const timeInput   = document.getElementById("appointment_time");
+    const notesInput  = document.getElementById("notes");
+    const cancelBtn   = document.getElementById("cancelBooking");
 
+    // Show form when clicking any "Book" button
     document.querySelectorAll(".book-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const card = btn.closest(".service-card");
-            serviceInput.value = card.dataset.service;
+            if (!card) return;
+
+            serviceInput.value = card.dataset.service || "";
             form.style.display = "block";
-            card.insertAdjacentElement("afterend", form);
+            form.scrollIntoView({ behavior: "smooth", block: "center" });
         });
     });
 
+    // Cancel / hide form
     cancelBtn.addEventListener("click", () => {
         form.reset();
         form.style.display = "none";
     });
 
+    // Submit new appointment
     form.addEventListener("submit", async e => {
         e.preventDefault();
 
+        // Very basic client-side validation
         if (!serviceInput.value || !dateInput.value || !timeInput.value) {
-            alert("Please complete all required fields");
+            alert("Please fill in service, date and time.");
             return;
         }
 
         const payload = {
-            service_type: serviceInput.value,
+            service_type: serviceInput.value.trim(),
             appointment_date: dateInput.value,
             appointment_time: timeInput.value,
-            notes: notesInput.value
+            notes: notesInput.value.trim()
         };
 
         try {
-            const response = await fetch("/api/create-appointment/", {
+            const res = await fetch("/api/create-appointment/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -57,183 +62,202 @@ function initBookingForm() {
                 body: JSON.stringify(payload)
             });
 
-            const data = await response.json();
-            alert(data.message || data.error);
+            const data = await res.json();
 
-            if (response.ok) {
+            if (res.ok) {
+                alert(data.message || "Appointment created successfully!");
                 form.reset();
                 form.style.display = "none";
                 loadAppointments();
+            } else {
+                alert(data.error || "Failed to create appointment");
             }
-
         } catch (err) {
             console.error(err);
-            alert("Failed to create appointment");
+            alert("Network error – could not create appointment");
         }
     });
 }
 
-/* LOAD APPOINTMENTS */
+// ── Load Appointments ───────────────────────────────────────────
 async function loadAppointments() {
-
-    const tableBody = document.querySelector(".apppointments tbody");
+    const tableBody = document.querySelector(".appointments tbody");
     if (!tableBody) return;
 
-    tableBody.innerHTML = `
-        <tr>
-            <td colspan="7" style="text-align:center;">Loading...</td>
-        </tr>
-    `;
+    tableBody.innerHTML = `<tr><td colspan="7">Loading...</td></tr>`;
 
     try {
-        const response = await fetch("/api/appointments/");
-        const data = await response.json();
+        const res = await fetch("/api/appointments/");
+        if (!res.ok) throw new Error("Failed to fetch appointments");
 
-        if (!response.ok || !data.appointments?.length) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" style="text-align:center;">No appointments found</td>
-                </tr>
-            `;
-            return;
-        }
+        const data = await res.json();
 
         tableBody.innerHTML = "";
+        if (!data.appointments?.length) {
+            tableBody.innerHTML = `<tr><td colspan="7">No appointments found</td></tr>`;
+            return;
+        }
 
         data.appointments.forEach(appt => {
             const row = document.createElement("tr");
 
-            const paymentBtn =
-                appt.status === "PENDING"
-                    ? `<button onclick="makePayment(${appt.id})">Pay</button>`
-                    : "-";
+            // Payment button (created dynamically – no inline onclick)
+            let paymentCellContent = appt.is_paid
+                ? "Paid"
+                : `<button class="pay-btn">Pay</button>`;
 
             row.innerHTML = `
-                <td>${appt.service_type}</td>
-                <td>${appt.appointment_date}</td>
-                <td>${appt.appointment_time}</td>
-                <td>${appt.status}</td>
+                <td>${appt.service_type || "-"}</td>
+                <td>${appt.appointment_date || "-"}</td>
+                <td>${appt.appointment_time || "-"}</td>
+                <td>${appt.status || "-"}</td>
                 <td>${appt.notes || "-"}</td>
                 <td>
-                    <button onclick="editAppointment(${appt.id})">Edit</button>
-                    <button onclick="deleteAppointment(${appt.id})">Delete</button>
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>
                 </td>
-                <td>${paymentBtn}</td>
+                <td>${paymentCellContent}</td>
             `;
+
+            // Attach event listeners
+            row.querySelector(".edit-btn")?.addEventListener("click", () => editAppointment(appt.id));
+            row.querySelector(".delete-btn")?.addEventListener("click", () => deleteAppointment(appt.id));
+
+            const payBtn = row.querySelector(".pay-btn");
+            if (payBtn && !appt.is_paid) {
+                payBtn.addEventListener("click", () => makePayment(appt.id));
+            }
 
             tableBody.appendChild(row);
         });
-
-    } catch (error) {
-        console.error(error);
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="7" style="text-align:center; color:red;">
-                    Failed to load appointments
-                </td>
-            </tr>
-        `;
+    } catch (err) {
+        console.error(err);
+        tableBody.innerHTML = `<tr><td colspan="7">Failed to load appointments</td></tr>`;
     }
 }
 
-/* PAYMENT MODAL LOGIC */
-function makePayment(appointmentId) {
-    selectedAppointmentId = appointmentId;
-    document.getElementById("paymentModal").style.display = "block";
+// ── Payment Modal ───────────────────────────────────────────────
+function makePayment(id) {
+    selectedAppointmentId = id;
+    const modal = document.getElementById("paymentModal");
+    if (modal) modal.style.display = "block";
 }
 
 function initPaymentModal() {
-
     const modal = document.getElementById("paymentModal");
-    const closeBtn = modal.querySelector(".close");
+    if (!modal) return;
+
+    const closeBtn    = modal.querySelector(".close");
     const paymentForm = document.getElementById("paymentForm");
-    const providerSelect = document.getElementById("providerSelect");
+
+    if (!closeBtn || !paymentForm) return;
 
     closeBtn.addEventListener("click", () => {
         modal.style.display = "none";
         paymentForm.reset();
-    });
-
-    window.addEventListener("click", e => {
-        if (e.target === modal) {
-            modal.style.display = "none";
-            paymentForm.reset();
-        }
+        selectedAppointmentId = null; // important cleanup
     });
 
     paymentForm.addEventListener("submit", async e => {
-        e.preventDefault();
+    e.preventDefault();
 
-        const phone = paymentForm.querySelector("input[type='text']").value;
-        const amount = paymentForm.querySelector("input[type='number']").value;
-        const provider = providerSelect.value;
+    // Look for the checked radio button (document-wide, because radios are outside the form)
+    const selectedRadio = document.querySelector('input[name="provider"]:checked');
 
-        if (!provider) {
-            alert("Please select a payment provider");
-            return;
-        }
+    if (!selectedRadio) {
+        alert("Please select a payment provider (Airtel or MTN)");
+        return;
+    }
 
-        try {
-            const response = await fetch(`/api/pay/${selectedAppointmentId}/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie("csrftoken")
-                },
-                body: JSON.stringify({
-                    payment_method: provider,
-                    phone_number: phone,
-                    amount: amount
-                })
-            });
+    const provider = selectedRadio.value;
 
-            const data = await response.json();
-            alert(data.message || data.error);
+    // Get phone and amount
+    const phoneInput = paymentForm.querySelector('input[type="text"]');   // #paymentPhone
+    const amountInput = paymentForm.querySelector('input[type="number"]'); // #paymentAmount
 
-            if (response.ok) {
-                modal.style.display = "none";
-                paymentForm.reset();
-                loadAppointments();
-            }
+    const phone = phoneInput?.value?.trim() || "";
+    const amount = amountInput?.value?.trim() || "";
 
-        } catch (err) {
-            console.error(err);
-            alert("Payment failed");
-        }
-    });
-}
+    if (!phone) {
+        alert("Please enter phone number");
+        return;
+    }
 
-/* HELPERS */
-function editAppointment(id) {
-    alert("Edit appointment " + id);
-}
+    if (!amount || Number(amount) <= 0) {
+        alert("Please enter a valid amount greater than 0");
+        return;
+    }
 
-async function deleteAppointment(id) {
-    if (!confirm("Delete appointment?")) return;
+    if (!selectedAppointmentId) {
+        alert("No appointment selected for payment");
+        return;
+    }
 
     try {
-        const res = await fetch(`/api/delete-appointment/${id}/`, {
+        const response = await fetch(`/api/pay/${selectedAppointmentId}/`, {
             method: "POST",
-            headers: { "X-CSRFToken": getCookie("csrftoken") }
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify({
+                payment_method: provider,
+                phone_number: phone,
+                amount: amount
+            })
         });
 
-        const data = await res.json();
-        alert(data.message || "Deleted");
-        if (res.ok) loadAppointments();
+        const data = await response.json();
+        alert(data.message || data.error || (response.ok ? "Success" : "Failed"));
+
+        if (response.ok) {
+            document.getElementById("paymentModal").style.display = "none";
+            paymentForm.reset();
+            // Optional: uncheck radios
+            document.querySelectorAll('input[name="provider"]').forEach(r => r.checked = false);
+            loadAppointments();
+        }
 
     } catch (err) {
         console.error(err);
-        alert("Delete failed");
+        alert("Payment request failed");
+    }
+});
+}
+
+// ── Edit / Delete ───────────────────────────────────────────────
+function editAppointment(id) {
+    alert(`Edit appointment #${id} – (to be implemented)`);
+    // Future: open edit modal, prefill form, send PATCH/PUT request
+}
+
+async function deleteAppointment(id) {
+    if (!confirm("Are you sure you want to delete this appointment?")) return;
+
+    try {
+        const res = await fetch(`/api/delete-appointment/${id}/`, {
+            method: "POST",   // consider DELETE if your backend supports it
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            }
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert(data.message || "Appointment deleted");
+            loadAppointments();
+        } else {
+            alert(data.error || "Could not delete appointment");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Failed to delete appointment");
     }
 }
 
+// ── Utility ─────────────────────────────────────────────────────
 function getCookie(name) {
-    let cookieValue = null;
-    document.cookie.split(";").forEach(cookie => {
-        cookie = cookie.trim();
-        if (cookie.startsWith(name + "=")) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        }
-    });
-    return cookieValue;
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
 }

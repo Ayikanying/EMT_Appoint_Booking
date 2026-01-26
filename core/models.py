@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -29,15 +30,26 @@ class Appointment(models.Model):
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
     notes = models.TextField(blank=True)
-
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-
-    # PAYMENT
-    is_paid = models.BooleanField(default=False)
-    payment_method = models.CharField(max_length=20, blank=True, null=True)
-    transaction_id = models.CharField(max_length=100, blank=True, null=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.service_type} ({self.status})"
+
+
+class Payment(models.Model):
+    PAYMENT_METHODS = [
+        ('MTN', 'MTN'),
+        ('Airtel', 'Airtel'),
+    ]
+
+    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
+    phone_number = models.CharField(max_length=20)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_id = models.CharField(max_length=100, unique=True, default=uuid.uuid4)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.payment_method} ({self.amount})"

@@ -8,7 +8,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h3>Hospital Dashboard</h3>
+            <h3>SHospital Dashboard</h3>
         </div>
 
         <!-- Appointments Section -->
@@ -112,18 +112,15 @@
             </div>
         </div>
 
-        <!-- Appointment Booking Form (GLOBAL & REUSABLE) -->
+        <!-- Appointment Booking Form -->
         <form class="appointment-form"
             id="appointmentForm"
             style="display:none; border:1px solid #ccc; padding:1rem; margin-top:1rem;">
-
             <h3>Book Appointment</h3>
 
             <input type="text" id="service_type" readonly placeholder="Service Type">
-
             <input type="date" id="appointment_date" required>
             <input type="time" id="appointment_time" required>
-
             <textarea id="notes" placeholder="Notes (optional)"></textarea>
 
             <div style="display:flex; gap:0.5rem;">
@@ -132,9 +129,8 @@
             </div>
         </form>
 
-
         <!-- Appointments Table -->
-        <div class="apppointments">
+        <div class="appointments">
             <h3>Your Appointments</h3>
             <table>
                 <thead>
@@ -150,7 +146,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="5" style="text-align:center;">
+                        <td colspan="7" style="text-align:center;">
                             Appointments will load here
                         </td>
                     </tr>
@@ -159,36 +155,35 @@
         </div>
         
         <!-- Payment Modal -->
+        <!-- Payment Modal -->
         <div id="paymentModal" class="modal" style="display: none;">
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <h3>Choose Payment Provider</h3>
 
-                <!-- Dropdown for selecting provider -->
-                <div class="payment-options">
-                    <label>
-                        <input type="radio" name="provider" value="Airtel">
-                        <img src="{% static 'images/airtel-logo.png' %}" alt="Airtel" class="provider-logo">
-                    </label>
-                    <label>
-                        <input type="radio" name="provider" value="MTN">
-                        <img src="{% static 'images/mtn-logo.png' %}" alt="MTN" class="provider-logo">
-                    </label>
-                </div>
-
-                <!-- Payment form that appears after selection -->
                 <form id="paymentForm">
-                    <input type="text" placeholder="Phone Number" required>
-                    <input type="number" placeholder="Amount" required>
+                    <div class="payment-options">
+                        <label>
+                            <input type="radio" name="provider" value="Airtel" id="provider-airtel" required>
+                            <img src="{% static 'images/airtel-logo.png' %}" alt="Airtel" class="provider-logo">
+                            <span>Airtel Money</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="provider" value="MTN" id="provider-mtn" required>
+                            <img src="{% static 'images/mtn-logo.png' %}" alt="MTN" class="provider-logo">
+                            <span>MTN MoMo</span>
+                        </label>
+                    </div>
+                    <input type="text" id="paymentPhone" placeholder="Phone Number" required>
+                    <input type="number" id="paymentAmount" placeholder="Amount" required>
                     <button type="submit">Pay</button>
                 </form>
-
-                <p id="popupMessage">Select your preferred payment provider.</p>
             </div>
         </div>
+
 
     </section>
 </div>
 
-<script src="{% static 'js/appointments.js' %}"></script>
 {% endblock %}
+<script src="{% static 'js/appointments.js' %}"></script>

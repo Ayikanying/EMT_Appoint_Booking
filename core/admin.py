@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Appointment
-from .models import Profile
+from .models import Profile, Payment
 
 # Register your models here.
 
@@ -32,3 +32,9 @@ class ProfileAdmin(admin.ModelAdmin):
 
     list_filter = ('role',)
     search_fields = ('user__username', 'phone_number', 'speciality', 'hospital_id')
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'appointment', 'payment_method', 'phone_number', 'amount', 'transaction_id', 'created_at')
+    list_filter = ('payment_method', 'created_at')
+    search_fields = ('user__username', 'transaction_id', 'phone_number')
