@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initPaymentModal();
 });
 
-// ── Booking Form ────────────────────────────────────────────────
+// Booking Form
 function initBookingForm() {
     const form = document.getElementById("appointmentForm");
     if (!form) return;
@@ -79,7 +79,7 @@ function initBookingForm() {
     });
 }
 
-// ── Load Appointments ───────────────────────────────────────────
+// Load Appointments
 async function loadAppointments() {
     const tableBody = document.querySelector(".appointments tbody");
     if (!tableBody) return;
@@ -136,7 +136,7 @@ async function loadAppointments() {
     }
 }
 
-// ── Payment Modal ───────────────────────────────────────────────
+// Payment Modal
 function makePayment(id) {
     selectedAppointmentId = id;
     const modal = document.getElementById("paymentModal");
@@ -225,7 +225,7 @@ function initPaymentModal() {
 });
 }
 
-// ── Edit / Delete ───────────────────────────────────────────────
+// Edit / Delete
 function editAppointment(id) {
     alert(`Edit appointment #${id} – (to be implemented)`);
     // Future: open edit modal, prefill form, send PATCH/PUT request
@@ -256,7 +256,7 @@ async function deleteAppointment(id) {
     }
 }
 
-// ── Utility ─────────────────────────────────────────────────────
+// Utility
 function getCookie(name) {
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     return match ? decodeURIComponent(match[2]) : null;
