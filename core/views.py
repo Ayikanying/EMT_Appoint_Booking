@@ -3,6 +3,7 @@ from datetime import datetime
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -31,9 +32,12 @@ def register_user(request):
         user = User.objects.create_user(username=email, email=email, password=password, first_name=full_name)
         if role == 'doctor':
             user.is_staff = True
+
+            doctor_group, _ = Group.objects.get_or_create(name="Doctor")
+            user.groups.add(doctor_group)
             user.save()
 
-        Profile.objects.create(user=user, role=role, phone_number=phone_number)
+        Profile.objects.create(user=user, role=role.upper(), phone_number=phone_number)
 
         return JsonResponse({'message': 'User registered successfully'}, status=201)
     except Exception as e:
