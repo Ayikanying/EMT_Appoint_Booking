@@ -5,6 +5,14 @@
 {% block content %}
 <div class="dashboard">
 
+    <!-- Hamburger Menu for Mobile -->
+    <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -32,8 +40,6 @@
                 <li><a href="#">Feedback / Reviews</a></li>
             </ul>
         </div>
-        {% endif %}
-
         <!-- Reports Section -->
         <div class="sidebar-section">
             <h4>Reports</h4>
@@ -43,6 +49,7 @@
                 <li><a href="#">Revenue / Billing</a></li>
             </ul>
         </div>
+        {% endif %}
 
         <!-- Settings Section -->
         <div class="sidebar-section">
@@ -80,6 +87,7 @@
         </div>
 
         <!-- Services -->
+         {% if request.user.is_staff == False %}
         <div class="services">
             <h3>Available Services</h3>
 
@@ -111,6 +119,7 @@
 
             </div>
         </div>
+        {% endif %}
 
         <!-- Appointment Booking Form -->
         <form class="appointment-form"
@@ -155,7 +164,6 @@
         </div>
         
         <!-- Payment Modal -->
-        <!-- Payment Modal -->
         <div id="paymentModal" class="modal" style="display: none;">
             <div class="modal-content">
                 <span class="close">&times;</span>
@@ -180,7 +188,6 @@
                 </form>
             </div>
         </div>
-
 
     </section>
 </div>

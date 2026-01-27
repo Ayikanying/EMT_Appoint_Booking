@@ -79,18 +79,20 @@ def profile_page(request):
 @login_required
 def appointments_page(request):
     user = request.user
-    total_appointments = Appointment.objects.filter(user=user).count()
-    pending_appointments = Appointment.objects.filter(user=user, status='PENDING').count()
-    completed_appointments = Appointment.objects.filter(user=user, status='COMPLETED').count()
-    cancelled_appointments = Appointment.objects.filter(user=user, status='REJECTED').count()
+
+    if not user.is_staff:
+        qs = Appointment.objects.filter(user=user)
+    else:
+        qs = Appointment.objects.all()
 
     context = {
-        'total_appointments': total_appointments,
-        'pending_appointments': pending_appointments,
-        'completed_appointments': completed_appointments,
-        'cancelled_appointments': cancelled_appointments,
+        "total_appointments": qs.count(),
+        "pending_appointments": qs.filter(status="PENDING").count(),
+        "completed_appointments": qs.filter(status="COMPLETED").count(),
+        "cancelled_appointments": qs.filter(status="REJECTED").count(),
     }
-    return render(request, 'core/appointments.html', context)
+
+    return render(request, "core/appointments.html", context)
 
 
 # Appointment APIs
@@ -113,7 +115,10 @@ def create_appointment(request):
 
 @login_required
 def list_appointments(request):
-    appointments = Appointment.objects.filter(user=request.user)
+    if request.user.is_staff:
+        appointments = Appointment.objects.all()
+    else:
+        appointments = Appointment.objects.filter(user=request.user)
     data = [
         {
             'id': a.id,

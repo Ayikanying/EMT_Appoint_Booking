@@ -11,6 +11,7 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
+    position: relative;
 }
 
 /* Navbar */
@@ -144,6 +145,7 @@ p a:hover {
     height: 100vh;
     overflow-y: auto;
     transition: all 0.3s ease;
+    z-index: 1050;
 }
 
 .sidebar-header {
@@ -293,7 +295,7 @@ p a:hover {
     background-color: #357ab8;
 }
 
-/* ---------------- Appointments Form ---------------- */
+/* ---------------- Appointment Form ---------------- */
 .appointment-form {
     background-color: #fff;
     padding: 1.5rem;
@@ -456,19 +458,6 @@ p a:hover {
     position: relative;
 }
 
-/* ---------------- Styled Dropdown Options ---------------- */
-#providerSelect option {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    background-color: #fff;
-    color: #333;
-}
-
-#providerSelect option:hover {
-    background-color: #4a90e2;
-    color: white;
-}
-
 .close {
     position: absolute;
     top: 0.5rem;
@@ -479,6 +468,7 @@ p a:hover {
     color: #333;
 }
 
+/* ---------------- Payment Form ---------------- */
 .payment-options {
     display: flex;
     justify-content: center;
@@ -540,26 +530,94 @@ p a:hover {
     text-align: center;
 }
 
-/* ---------------- Mobile responsiveness ---------------- */
+/* ---------------- Sidebar Toggle for Mobile ---------------- */
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1100;
+    width: 35px;
+    height: 30px;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.menu-toggle span {
+    display: block;
+    height: 4px;
+    width: 100%;
+    background: #2c3e50;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1040;
+    transition: opacity 0.3s ease;
+}
+
+/* ---------------- Mobile Responsiveness ---------------- */
 @media (max-width: 992px) {
     .dashboard {
         flex-direction: column;
     }
 
+    .menu-toggle {
+        display: flex;
+    }
+
     .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        flex-direction: column;
+        position: fixed;
+        width: 260px;
+        height: 100vh;
+        top: 0;
+        left: -260px;
         padding: 1rem;
+        overflow-y: auto;
+        transition: left 0.3s ease;
+    }
+
+    .sidebar.active + .sidebar-overlay {
+        display: block;
+    }
+
+    .main-content {
+        padding: 1rem;
+        margin-left: 0;
+        transition: margin-left 0.3s ease;
+    }
+
+    .sidebar.active ~ .main-content {
+        margin-left: 260px;
     }
 
     .sidebar-header {
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-
-    .sidebar-section {
+        text-align: left;
         margin-bottom: 1rem;
     }
 
@@ -569,21 +627,13 @@ p a:hover {
     }
 
     .sidebar-section ul {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.5rem;
+        flex-direction: column;
+        gap: 0.25rem;
     }
 
     .sidebar-section ul li a {
-        padding: 0.4rem 0.75rem;
-        font-size: 0.85rem;
-        white-space: nowrap;
-    }
-
-    .main-content {
-        padding: 1rem;
-        grid-template-columns: 1fr;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
     }
 
     .summary-cards {

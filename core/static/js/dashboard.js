@@ -261,3 +261,19 @@ function getCookie(name) {
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     return match ? decodeURIComponent(match[2]) : null;
 }
+
+const menuToggle = document.getElementById('menuToggle');
+const sidebar = document.querySelector('.sidebar');
+const overlay = document.getElementById('sidebarOverlay');
+
+menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    menuToggle.classList.toggle('active');
+    overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+});
+
+overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    menuToggle.classList.remove('active');
+    overlay.style.display = 'none';
+});
