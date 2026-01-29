@@ -32,9 +32,6 @@ def register_user(request):
         user = User.objects.create_user(username=email, email=email, password=password, first_name=full_name)
         if role == 'doctor':
             user.is_staff = True
-
-            doctor_group, _ = Group.objects.get_or_create(name="Doctor")
-            user.groups.add(doctor_group)
             user.save()
 
         Profile.objects.create(user=user, role=role.upper(), phone_number=phone_number)

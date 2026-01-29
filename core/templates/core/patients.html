@@ -1,0 +1,62 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Patients{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3>SHospital</h3>
+        </div>
+
+        <!-- Appointments Section -->
+        <div class="sidebar-section">
+            <h4>Dashboard</h4>
+            <ul>
+                <li><a href="{% url 'appointments_page' %}">Overview</a></li>
+                {% if request.user.is_staff %}
+                <li><a href="#">Appointment Calendar</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Patients Section (Admin only) -->
+        {% if request.user.is_staff %}
+        <div class="sidebar-section">
+            <h4>Patients</h4>
+            <ul>
+                <li><a href="#">All Patients</a></li>
+                <li><a href="#">Patient Records</a></li>
+                <li><a href="#">Feedback / Reviews</a></li>
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Reports Section -->
+        <div class="sidebar-section">
+            <h4>Reports</h4>
+            <ul>
+                <li><a href="#">Daily Appointments</a></li>
+                <li><a href="#">Weekly Appointments</a></li>
+                <li><a href="#">Revenue / Billing</a></li>
+            </ul>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="sidebar-section">
+            <h4>Settings</h4>
+            <ul>
+                <li><a href="{% url 'profile_page' %}">Profile</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main content: PATIENTS INFO -->
+    <section class="main-content">
+        <h2>Patients Management</h2>
+        <!-- Content for managing patients goes here -->
+    </section>
+{% endblock %}
